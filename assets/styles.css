@@ -1169,47 +1169,248 @@ table.years td.tot {
   margin: 14px 0 0;
 }
 
-details.assumptions {
-  margin-top: 24px;
-  background: #fff;
-  border: 1px solid var(--line);
+/* ---------- About these numbers (discreet button + dialog) ---------- */
+.calc-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
 }
 
-details.assumptions summary {
+.noticebtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--gray);
+  background: transparent;
+  border: 0;
+  padding: 6px 0;
   cursor: pointer;
+  border-radius: 0;
+  transition: color 0.2s;
+}
+
+.noticebtn .i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 10.5px;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.noticebtn:hover,
+.noticebtn:focus-visible {
+  color: var(--navy);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.noticebtn.light {
+  display: inline;
+  padding: 0;
+  font-size: inherit;
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.noticebtn.light:hover,
+.noticebtn.light:focus-visible {
+  color: #fff;
+}
+
+html.modal-open {
+  overflow: hidden;
+}
+
+dialog.notice {
+  width: min(900px, calc(100% - 32px));
+  max-height: min(88vh, 920px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+dialog.notice[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+dialog.notice::backdrop {
+  background: rgba(15, 25, 65, 0.66);
+}
+
+.nd-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   padding: 18px 26px;
+  background: var(--navy);
+  color: #fff;
+}
+
+.nd-head h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nd-close {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  font-family: inherit;
+  font-size: 24px;
+  line-height: 1;
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nd-close:hover,
+.nd-close:focus-visible {
+  background: #fff;
+  color: var(--navy);
+}
+
+.nd-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 26px 30px;
+}
+
+.nd-body section {
+  padding: 22px 0 0;
+}
+
+.nd-body h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+
+.nd-body p {
+  margin: 0 0 12px;
+  font-size: 14.5px;
+  color: var(--slate);
+}
+
+.nd-body b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.nd-formulas {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  font-size: 14px;
+  color: var(--slate);
+}
+
+.nd-formulas li {
+  margin-bottom: 8px;
+}
+
+.nd-group {
+  margin-top: 16px;
+}
+
+.nd-group h4 {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--navy);
+  background: var(--mist);
+}
+
+.nd-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.7fr) minmax(0, 2.1fr);
+  gap: 6px 18px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+
+.nd-row .a {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.nd-row .b {
   font-weight: 600;
   color: var(--navy);
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
-details.assumptions summary::-webkit-details-marker {
-  display: none;
-}
-
-details.assumptions summary::after {
-  content: '+';
-  font-size: 22px;
-  color: var(--red);
-  font-weight: 400;
-}
-
-details.assumptions[open] summary::after {
-  content: '\2212';
-}
-
-details.assumptions ul {
-  margin: 0;
-  padding: 0 26px 22px 46px;
+.nd-row .c {
   color: var(--slate);
-  font-size: 14.5px;
 }
 
-details.assumptions li {
-  margin-bottom: 8px;
+.nd-body .nd-legal {
+  margin-top: 24px;
+  padding: 18px 20px 6px;
+  background: var(--mist);
+  border-left: 4px solid var(--navy);
+}
+
+.nd-legal p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+@media (max-width: 640px) {
+  dialog.notice {
+    width: calc(100% - 20px);
+    max-height: 92vh;
+  }
+  .nd-head {
+    padding: 14px 16px;
+  }
+  .nd-head h2 {
+    font-size: 16px;
+  }
+  .nd-body {
+    padding: 4px 16px 24px;
+  }
+  .nd-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .nd-row .c {
+    grid-column: 1 / -1;
+  }
+  .nd-body .nd-legal {
+    padding: 16px 14px 4px;
+  }
+  .calc-foot {
+    justify-content: flex-start;
+  }
 }
 
 /* ---------- Demo ---------- */

@@ -301,6 +301,90 @@
   }
 
   // ---------------------------------------------------------------------------
+  // "About these numbers": methodology, input sources, and the notice.
+  // The sources table is built from the model's defaults so it can't drift
+  // from what the calculator actually starts with.
+  // ---------------------------------------------------------------------------
+
+  const BENCH = 'Set below the 30% average customer success benchmark (FY25 Customer Success Metrics, based on an annual survey of customers from businesses worldwide).';
+  const NO_BENCH = 'Modeled improvement from the business value assessment. No customer benchmark is shown for this driver.';
+  const SOURCES = {
+    bdms: 'Provided by Luttrell.',
+    revenuePerBdm: 'Salesforce estimate, based on the $2M-per-BDM example from our September 30 discussion.',
+    grossMarginPct: 'Salesforce assumption: the low end of the light industrial range (20% to 28%).',
+    loadedCost: 'Salesforce estimate: regional BDM pay ($74K to $82K) plus benefits and payroll taxes.',
+    improvablePct: 'Salesforce estimate of the share of BDMs who can realistically improve their revenue contribution.',
+    revLiftPct: NO_BENCH,
+    oppsPerBdmPerYear: 'Salesforce estimate: about one qualified opportunity per BDM per week over 48 weeks.',
+    avgDealSize: 'Salesforce estimate: first-year billings from a new client.',
+    winRatePct: 'Salesforce assumption: a cross-industry average close rate.',
+    winLiftPct: BENCH,
+    onboardingWeeks: 'Salesforce assumption: a typical field-sales ramp of 3 to 9 months.',
+    onboardingReductionPct: NO_BENCH,
+    newHiresPerYear: 'Salesforce estimate: backfills plus planned team growth.',
+    nonSellingPct: 'Salesforce benchmark: the 2026 State of Sales report cites 60% non-selling time. Modeled at 40% to stay conservative.',
+    productivityLiftPct: BENCH,
+    planningTimePct: 'Salesforce assumption.',
+    efficiencyLiftPct: NO_BENCH
+  };
+
+  function initNotice() {
+    const dlg = $('#notice');
+    if (!dlg) return;
+    const M = window.ROIModel;
+    const D = M.DEFAULTS;
+
+    const fmt = (id) => {
+      const f = FIELDS[id];
+      const v = D[id];
+      if (f.unit === 'usd') return usd(v);
+      if (f.unit === 'pct') return trim(v, 1) + '%';
+      return trim(v, 1) + (f.suffix === 'wks' ? ' weeks' : '');
+    };
+    const row = (label, value, src) =>
+      '<div class="nd-row"><div class="a">' + label + '</div><div class="b">' + value + '</div><div class="c">' + src + '</div></div>';
+
+    const groups = [['Your team', ['bdms', 'revenuePerBdm', 'grossMarginPct', 'loadedCost']]].concat(
+      DRIVERS.map((d, i) => [(i + 1) + '. ' + d.title, d.fields])
+    );
+
+    let html = '';
+    groups.forEach((g) => {
+      html += '<div class="nd-group"><h4>' + g[0] + '</h4>' +
+        g[1].map((id) => row(FIELDS[id].label, fmt(id), SOURCES[id])).join('') + '</div>';
+    });
+    html += '<div class="nd-group"><h4>Investment and ramp</h4>' +
+      row('Licensing', usd(D.licensing[0]) + ' in Year 1',
+        'Anytime pricing for Sales Cloud Core Edition, Maps, Enablement, and Agentforce for Sales at ' + D.users +
+        ' users: $105,690 a year, rounded to $105,000 in the business case. Years 2 to 5 follow the proposal schedule. The Premier Success Plan is included.') +
+      row('Implementation', usd(D.implementation[0]) + ' in Year 1',
+        'Time-and-materials estimate from the implementation partner. The business case uses the $117K end of the $59K to $117K range, then smaller amounts in later years.') +
+      row('Maintenance and support', usd(D.maintenance[0]) + ' in Year 1', 'Ongoing support and maintenance, from the proposal schedule ($18K rising to $27K a year).') +
+      row('Benefit ramp', D.ramp.map((r) => r + '%').join(', '), 'Share of the annual benefit realized each year, to allow for change management.') +
+      '</div>';
+    $('#notice-sources').innerHTML = html;
+
+    const root = document.documentElement;
+    const open = () => {
+      if (typeof dlg.showModal === 'function') dlg.showModal();
+      else dlg.setAttribute('open', '');
+      root.classList.add('modal-open');
+      $('.nd-body', dlg).scrollTop = 0;
+    };
+    const close = () => {
+      if (typeof dlg.close === 'function') dlg.close();
+      else dlg.removeAttribute('open');
+      root.classList.remove('modal-open');
+    };
+    $$('[data-open-notice]').forEach((b) => b.addEventListener('click', open));
+    $('.nd-close', dlg).addEventListener('click', close);
+    dlg.addEventListener('click', (e) => {
+      if (e.target === dlg) close(); // click on the dimmed backdrop
+    });
+    dlg.addEventListener('close', () => root.classList.remove('modal-open')); // Esc key
+  }
+
+  // ---------------------------------------------------------------------------
   // Calculator
   // ---------------------------------------------------------------------------
 
@@ -640,7 +724,7 @@
   // Boot. Each piece is isolated so one failure can't blank the page.
   // ---------------------------------------------------------------------------
 
-  [initChrome, initDemo, initKpis, initCalculator].forEach((fn) => {
+  [initChrome, initDemo, initKpis, initCalculator, initNotice].forEach((fn) => {
     try {
       fn();
     } catch (err) {

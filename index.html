@@ -142,17 +142,9 @@
           </details>
         </div>
 
-        <details class="assumptions reveal">
-          <summary>Assumptions and how to read this</summary>
-          <ul>
-            <li>The five drivers are modeled independently and added together, as in the pricing-review business case. Three raise gross profit (revenue per BDM, win rate, onboarding). Two are time savings valued at fully loaded cost (productivity, team efficiency), so no margin is applied to them.</li>
-            <li>Benefits ramp in at 30% of the annual amount in Year 1, 70% in Year 2, and 100% from Year 3, to allow for change management. You can edit the ramp.</li>
-            <li>Only win rate and productivity show a Salesforce customer benchmark (30% each) next to the modeled lift. The starting lifts (10% for win rate, 15% for productivity) are set well below that benchmark on purpose.</li>
-            <li>Costs reflect the Anytime licensing quote for 25 users (Sales Cloud Core Edition, Maps, Enablement, and Agentforce for Sales), with the business case rounding $105,690 a year to $105,000. Premier Success support is included. Implementation is the time-and-materials estimate from your implementation partner. Pricing is indicative and is not a quote.</li>
-            <li>Payback assumes each year's costs are paid up front and benefits arrive evenly through the year.</li>
-            <li>Demo data was synthetic. Nothing here is a measured outcome for Luttrell.</li>
-          </ul>
-        </details>
+        <div class="calc-foot">
+          <button type="button" class="noticebtn" data-open-notice aria-haspopup="dialog"><span class="i" aria-hidden="true">i</span>About these numbers and important notice</button>
+        </div>
       </div>
     </section>
 
@@ -242,10 +234,48 @@
           <span class="panel-logo"><img class="lt" src="assets/luttrell-logo.png" alt="Luttrell Staffing Group" width="420" height="192" /></span>
           <span class="panel-logo"><img class="sf" src="assets/salesforce-logo.svg" alt="Salesforce" width="48" height="34" /></span>
         </div>
-        <p class="fine" style="margin:0;">Draft business case for discussion. Figures are illustrative estimates based on inputs shared during the evaluation and Salesforce benchmarks. Pricing is indicative and is not a quote or a commitment.</p>
+        <p class="fine" style="margin:0;">Draft business case for discussion. Figures are illustrative estimates based on inputs shared during the evaluation and Salesforce benchmarks. Pricing is indicative and is not a quote or a commitment. <button type="button" class="noticebtn light" data-open-notice aria-haspopup="dialog">Methodology and important notice</button></p>
       </div>
     </div>
   </footer>
+
+  <dialog id="notice" class="notice" aria-labelledby="notice-title">
+    <div class="nd-head">
+      <h2 id="notice-title">About these numbers</h2>
+      <button type="button" class="nd-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="nd-body">
+      <section>
+        <h3>How the numbers are built</h3>
+        <p>The calculator follows the structure of the Salesforce business value assessment reviewed on October 28. Five drivers are modeled separately and added together.</p>
+        <ol class="nd-formulas">
+          <li><b>Increase Revenue per BDM.</b> BDMs &times; share with room to improve &times; annual revenue per BDM &times; revenue lift &times; gross margin.</li>
+          <li><b>Increase Win Rate.</b> BDMs &times; qualified opportunities per BDM &times; average deal size &times; current win rate &times; win-rate lift &times; gross margin.</li>
+          <li><b>Reduce New BDM Onboarding Time.</b> Weeks to onboard &times; reduction = weeks gained, &times; weekly sales per BDM (annual revenue &divide; 52) &times; new BDMs hired per year &times; gross margin.</li>
+          <li><b>Increase BDM Productivity.</b> BDMs &times; share of time on non-selling work &times; fully loaded cost &times; share of that time recovered.</li>
+          <li><b>Increase Sales Team Efficiency.</b> BDMs &times; share of time on planning, activity reporting, and commissions &times; fully loaded cost &times; share of that time recovered.</li>
+        </ol>
+        <p>The first three count only the gross margin on added revenue. The last two are time savings valued at fully loaded cost, so no margin is applied to them.</p>
+        <p>Each driver is an annual amount at full ramp. Benefits phase in at 30% in Year 1, 70% in Year 2, and 100% from Year 3 to allow for change management, and you can edit the ramp. Costs are licensing, implementation, and ongoing support and maintenance. Net benefit is benefit minus cost, and ROI is cumulative net benefit divided by cumulative cost.</p>
+        <p>The payback month shown on this page is an estimate. It assumes each year&rsquo;s costs are paid up front and benefits arrive evenly through the year. The pricing-review deck defines payback as the first month in which cumulative monthly benefit exceeds cumulative monthly cost, and shows it as under 12 months.</p>
+      </section>
+
+      <section>
+        <h3>Where the inputs come from</h3>
+        <p>Inputs tagged &ldquo;Luttrell provided&rdquo; came from your team. Every other input is a Salesforce estimate, assumption, or benchmark for you to confirm or replace. The starting values are listed here, and you can change any of them in the calculator.</p>
+        <div class="nd-sources" id="notice-sources"></div>
+      </section>
+
+      <section class="nd-legal">
+        <h3>Important notice</h3>
+        <p><b>Illustrative only.</b> This calculator is a business-case tool for discussion. It is not a quote, proposal, offer, or commitment, and it does not guarantee any result.</p>
+        <p><b>Estimates and assumptions.</b> The outputs depend entirely on the inputs. Apart from the number of BDMs, the starting inputs are Salesforce estimates, assumptions, and industry benchmarks that have not been verified with Luttrell. Customer success benchmarks are averages from an annual customer survey, not predictions for any one company. Actual results will vary with factors such as user adoption, data quality, process and hiring changes, team size and mix, market conditions, and implementation scope.</p>
+        <p><b>Forward-looking statements.</b> The benefits, costs, ROI, and payback shown are forward-looking estimates. They involve risks, uncertainties, and assumptions, and if any assumption proves incorrect, actual results could differ materially from those shown.</p>
+        <p><b>Pricing.</b> Licensing, implementation, and support figures are indicative, based on the proposal reviewed on October 28, and may change. Implementation is an estimate on a time-and-materials basis. Final pricing, products, and terms are set only by a signed Salesforce order form.</p>
+        <p><b>Not advice.</b> Nothing here is financial, accounting, tax, or legal advice. Please validate the inputs and results with your own finance team. The product demonstration used synthetic data, and nothing shown is a measured outcome for Luttrell.</p>
+      </section>
+    </div>
+  </dialog>
 
   <script src="assets/roi-model.js"></script>
   <script src="assets/app.js"></script>
