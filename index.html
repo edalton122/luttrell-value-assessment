@@ -108,18 +108,38 @@
           <h2 class="section-title">ROI calculator</h2>
           <p class="section-lead">This is the business case from the October 28 pricing review, with the math showing. The starting numbers match the deck. Change any assumption and every result updates, so you can see where each dollar comes from and test your own figures.</p>
         </div>
-        <div class="calc-banner reveal"><strong>Draft for discussion.</strong> Inputs tagged "Luttrell provided" came from your team. Everything else is a Salesforce estimate for you to confirm or replace. Results are illustrative estimates, not commitments.</div>
+        <div class="calc-banner reveal"><strong>Draft for discussion.</strong> Inputs tagged "Luttrell provided" came from your team. Everything else is a Salesforce estimate for you to confirm or replace. Results are illustrative estimates, not commitments. The results bar stays in view as you change numbers.</div>
 
-        <div class="calc-grid" id="calc">
-          <div class="calc-left" id="calc-left"></div>
-          <aside class="calc-right" id="calc-right" aria-label="Results" aria-live="polite"></aside>
-        </div>
+        <div class="calc" id="calc">
+          <div class="sumbar" id="sumbar" role="region" aria-label="Results" aria-live="polite"></div>
 
-        <div class="card table-card reveal">
-          <h3 style="font-size:20px;margin-bottom:6px;">Five-year view</h3>
-          <p style="color:var(--slate);font-size:14.5px;margin:0 0 18px;">Benefits ramp in over the first years, and costs follow the proposal schedule. Use the year columns as a checkpoint at year 1, 2, 3, and 5.</p>
-          <div class="table-scroll" id="years-table"></div>
-          <p class="table-note" id="payback-note"></p>
+          <section class="team-strip" id="team-strip" aria-label="Your team"></section>
+
+          <div class="acc-head">
+            <div>
+              <h3>Where the annual benefit comes from</h3>
+              <p>Open any row to see the math and change its inputs.</p>
+            </div>
+            <button type="button" class="linkbtn" id="toggle-all" aria-pressed="false">Expand all</button>
+          </div>
+          <div class="stack" id="driver-stack" aria-hidden="true"></div>
+
+          <div class="accs" id="calc-left"></div>
+
+          <details class="acc" id="five">
+            <summary>
+              <span class="ttl"><span class="cap">Year by year</span><span class="nm">Five-year view</span></span>
+              <span class="meter" aria-hidden="true"></span>
+              <span class="val"><b data-five-v></b><small>5-year net benefit</small></span>
+              <span class="chev" aria-hidden="true"></span>
+            </summary>
+            <div class="acc-body">
+              <p class="blurb">Benefits ramp in over the first years, and costs follow the proposal schedule. Use the year columns as a checkpoint at year 1, 2, 3, and 5.</p>
+              <div class="chart" id="years-chart"></div>
+              <div class="table-scroll" id="years-table"></div>
+              <p class="table-note" id="payback-note"></p>
+            </div>
+          </details>
         </div>
 
         <details class="assumptions reveal">
@@ -226,12 +246,6 @@
       </div>
     </div>
   </footer>
-
-  <div id="mobile-bar" aria-hidden="true">
-    <div><div class="mb">Annual benefit</div><div class="mv" id="mb-benefit">$0</div></div>
-    <div><div class="mb">5-year ROI</div><div class="mv" id="mb-roi">0%</div></div>
-    <a class="btn btn-sm" href="#calc-right">Results</a>
-  </div>
 
   <script src="assets/roi-model.js"></script>
   <script src="assets/app.js"></script>

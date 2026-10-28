@@ -309,15 +309,18 @@
     let state = M.clone(M.DEFAULTS);
 
     const left = $('#calc-left');
-    const right = $('#calc-right');
+    const strip = $('#team-strip');
+    const sumbar = $('#sumbar');
+    const stackEl = $('#driver-stack');
 
-    // ----- Build the left column once -----
-    function fieldHTML(id) {
+    // ----- Build the inputs once -----
+    // compact = the "Your team" strip: no hint line, hint moves to a tooltip.
+    function fieldHTML(id, compact) {
       const f = FIELDS[id];
       const tag =
         f.src === 'luttrell'
           ? '<span class="tag luttrell">Luttrell provided</span>'
-          : '<span class="tag">Salesforce estimate, please confirm</span>';
+          : '<span class="tag" title="Salesforce estimate, please confirm">Salesforce estimate</span>';
       const prefix = f.unit === 'usd' ? '<span class="u">$</span>' : '';
       const suffix = f.unit === 'pct' ? '<span class="u">%</span>' : f.suffix ? '<span class="u">' + f.suffix + '</span>' : '';
       let bench = '';
@@ -329,31 +332,40 @@
       }
       return (
         '<div class="field" data-field="' + id + '">' +
-        '<div class="top"><label for="n-' + id + '">' + f.label + '</label>' + tag + '</div>' +
+        '<div class="top"><label for="n-' + id + '"' + (compact && f.hint ? ' title="' + f.hint + '"' : '') + '>' + f.label + '</label>' + tag + '</div>' +
         '<div class="control">' +
         '<div class="rangewrap"><input type="range" id="r-' + id + '" min="' + f.min + '" max="' + f.max + '" step="' + f.step + '" aria-label="' + f.label + ' slider" />' + bench + '</div>' +
         '<div class="numbox">' + prefix + '<input type="number" id="n-' + id + '" inputmode="decimal" step="any" min="0" />' + suffix + '</div>' +
         '</div>' +
         benchLabel +
-        (f.hint ? '<div class="hint">' + f.hint + '</div>' : '') +
+        (!compact && f.hint ? '<div class="hint">' + f.hint + '</div>' : '') +
         '</div>'
       );
     }
 
-    const shared =
-      '<article class="card" id="card-shared">' +
-      '<div class="card-head"><div><span class="badge slate">Start here</span><h3>Your team</h3>' +
-      '<p class="blurb">These four inputs feed several drivers, so you only enter them once.</p></div></div>' +
-      '<div class="fields">' + ['bdms', 'revenuePerBdm', 'grossMarginPct', 'loadedCost'].map(fieldHTML).join('') + '</div></article>';
+    strip.innerHTML =
+      '<div class="ts-intro">' +
+      '<div class="ts-title"><span class="badge">Start here</span><h3>Your team</h3>' +
+      '<p>These four inputs feed several drivers, so you only enter them once.</p></div>' +
+      '<button type="button" class="linkbtn solid" id="reset-btn" title="Restore every input to the pricing-review deck values">Reset to deck values</button>' +
+      '</div>' +
+      '<div class="ts-fields">' + ['bdms', 'revenuePerBdm', 'grossMarginPct', 'loadedCost'].map((id) => fieldHTML(id, true)).join('') + '</div>';
 
+    // Accordion row. `meter` is the share bar; it is empty for non-driver rows.
+    const chev = '<span class="chev" aria-hidden="true"></span>';
     const driverCards = DRIVERS.map((d, i) =>
-      '<article class="card" data-driver="' + d.key + '">' +
-      '<div class="card-head"><div><span class="badge ' + (d.kind === 'time' ? 'time' : '') + '">' +
-      (d.kind === 'time' ? 'Time savings' : 'Gross profit') + '</span><h3>' + (i + 1) + '. ' + d.title + '</h3>' +
-      '<p class="blurb">' + d.blurb + '</p></div>' +
-      '<div class="card-value"><div class="v" data-v></div><div class="s" data-s></div></div></div>' +
+      '<details class="acc" data-driver="' + d.key + '">' +
+      '<summary>' +
+      '<span class="ttl"><span class="cap"><i class="dot" style="background:' + SEGMENT_COLORS[i] + '"></i>' + (d.kind === 'time' ? 'Time savings' : 'Gross profit') + '</span>' +
+      '<span class="nm">' + (i + 1) + '. ' + d.title + '</span></span>' +
+      '<span class="meter" aria-hidden="true"><i style="background:' + SEGMENT_COLORS[i] + '"></i></span>' +
+      '<span class="val"><b data-v></b><small data-s></small></span>' + chev +
+      '</summary>' +
+      '<div class="acc-body">' +
+      '<p class="blurb">' + d.blurb + '</p>' +
       '<div class="formula" data-f></div>' +
-      '<div class="fields">' + d.fields.map(fieldHTML).join('') + '</div></article>'
+      '<div class="fields n' + d.fields.length + '">' + d.fields.map((id) => fieldHTML(id, false)).join('') + '</div>' +
+      '</div></details>'
     ).join('');
 
     const schedHead =
@@ -368,18 +380,23 @@
     ).join('');
 
     const investment =
-      '<article class="card" id="card-invest">' +
-      '<div class="card-head"><div><span class="badge red">Investment</span><h3>Licensing, implementation, and ramp</h3>' +
-      '<p class="blurb">Starts from the proposal reviewed on October 28: Sales Cloud Core Edition, Maps, Enablement, and Agentforce for Sales at 25 users on Anytime pricing, plus implementation. Edit any cell.</p></div>' +
-      '<div class="card-value"><div class="v" data-inv-v></div><div class="s">5-year investment</div></div></div>' +
+      '<details class="acc" id="card-invest">' +
+      '<summary>' +
+      '<span class="ttl"><span class="cap"><i class="dot" style="background:#9D1B20"></i>Investment</span>' +
+      '<span class="nm">Licensing, implementation, and ramp</span></span>' +
+      '<span class="meter" aria-hidden="true"></span>' +
+      '<span class="val"><b data-inv-v></b><small>5-year investment</small></span>' + chev +
+      '</summary>' +
+      '<div class="acc-body">' +
+      '<p class="blurb">Starts from the proposal reviewed on October 28: Sales Cloud Core Edition, Maps, Enablement, and Agentforce for Sales at 25 users on Anytime pricing, plus implementation. Edit any cell.</p>' +
       '<div class="stepper"><div class="lbl">Licensed users<small data-lic-note></small></div>' +
-      '<div><div class="numbox"><input type="number" id="n-users" step="1" min="0" inputmode="numeric" aria-label="Licensed users" /></div></div></div>' +
-      '<div class="rangewrap" style="padding:0 26px 14px"><input type="range" id="r-users" min="' + FIELDS.users.min + '" max="' + FIELDS.users.max + '" step="1" aria-label="Licensed users slider" /></div>' +
+      '<div class="rangewrap"><input type="range" id="r-users" min="' + FIELDS.users.min + '" max="' + FIELDS.users.max + '" step="1" aria-label="Licensed users slider" /></div>' +
+      '<div class="numbox"><input type="number" id="n-users" step="1" min="0" inputmode="numeric" aria-label="Licensed users" /></div></div>' +
       '<div class="sched">' + schedHead + schedRows + '</div>' +
       '<p class="inv-note">The quote is for 25 users and the discount tier holds for 23 to 25 users. Outside that range pricing may differ, so licensing here simply scales with the number of users. The business case rounds the $105,690 annual quote to $105,000.</p>' +
-      '</article>';
+      '</div></details>';
 
-    left.innerHTML = shared + driverCards + investment;
+    left.innerHTML = driverCards + investment;
 
     // ----- Wire inputs -----
     function hardMax(f) {
@@ -479,8 +496,10 @@
       r.drivers.forEach((d) => {
         const card = $('[data-driver="' + d.key + '"]', left);
         if (!card) return;
+        const share = r.steadyState > 0 ? (d.value / r.steadyState) * 100 : 0;
         $('[data-v]', card).textContent = usd(d.value);
-        $('[data-s]', card).textContent = (r.steadyState > 0 ? Math.round((d.value / r.steadyState) * 100) : 0) + '% of annual benefit';
+        $('[data-s]', card).textContent = Math.round(share) + '% of annual benefit';
+        $('.meter i', card).style.width = Math.max(0, Math.min(100, share)) + '%';
         $('[data-f]', card).innerHTML = formulaFor(d.key, state, r) + ' <b>=</b> <b>' + usd(d.value) + '</b>';
       });
       $('[data-inv-v]', left).textContent = compact(r.totals.cost);
@@ -511,44 +530,48 @@
       return out + '</svg>';
     }
 
+    // The always-visible results bar plus the stacked benefit bar above the rows.
     function renderResults(r) {
       const t = r.totals;
       const total = r.steadyState;
-      const stack = r.drivers
+      const stat = (label, value, cls) =>
+        '<div class="stat ' + (cls || '') + '"><div class="v">' + value + '</div><div class="l">' + label + '</div></div>';
+
+      sumbar.innerHTML =
+        stat('Annual benefit<span class="x"> at full ramp</span>', compact(r.steadyState), 'lead') +
+        stat('5-year ROI', Math.round(t.roiPct) + '%') +
+        stat('Payback', paybackText(r.payback, true)) +
+        stat('5-year benefits', compact(t.benefit), 'opt') +
+        stat('5-year investment', compact(t.cost), 'opt') +
+        stat('5-year net', compact(t.net), 'opt');
+
+      stackEl.innerHTML = r.drivers
         .map((d, i) => '<span style="width:' + (total > 0 ? (d.value / total) * 100 : 0) + '%;background:' + SEGMENT_COLORS[i] + '" title="' + DRIVERS[i].title + '"></span>')
         .join('');
-      const legend = r.drivers
-        .map(
-          (d, i) =>
-            '<li><span class="dot" style="background:' + SEGMENT_COLORS[i] + '"></span><span>' + DRIVERS[i].title + '</span>' +
-            '<span class="amt">' + compact(d.value) + '</span><span class="pc">' + (total > 0 ? Math.round((d.value / total) * 100) : 0) + '%</span></li>'
-        )
-        .join('');
-
-      right.innerHTML =
-        '<div class="result-main">' +
-        '<button type="button" class="reset" id="reset-btn" title="Restore every input to the pricing-review deck values">Reset to deck values</button>' +
-        '<div class="k">Annual benefit at full ramp</div>' +
-        '<div class="big">' + compact(r.steadyState) + '</div>' +
-        '<div class="sub">All five drivers, from Year 3 on</div>' +
-        '<div class="mini-grid">' +
-        '<div class="mini"><div class="v">' + Math.round(t.roiPct) + '%</div><div class="l">5-year ROI</div></div>' +
-        '<div class="mini"><div class="v">' + paybackText(r.payback, true) + '</div><div class="l">Payback on the investment</div></div>' +
-        '<div class="mini"><div class="v">' + compact(t.benefit) + '</div><div class="l">5-year total benefits</div></div>' +
-        '<div class="mini"><div class="v">' + compact(t.cost) + '</div><div class="l">5-year total investment</div></div>' +
-        '<div class="mini"><div class="v">' + compact(t.net) + '</div><div class="l">5-year net benefit</div></div>' +
-        '<div class="mini"><div class="v">' + compact(r.years[0].net) + '</div><div class="l">Year 1 net benefit</div></div>' +
-        '</div></div>' +
-        '<div class="panel"><h4>Where the benefit comes from</h4><div class="stack">' + stack + '</div><ul class="legend">' + legend + '</ul></div>' +
-        '<div class="panel chart"><h4>Benefit and investment by year</h4>' + chartSVG(r.years) +
-        '<div class="chart-legend"><span><i style="background:#0F1941"></i>Benefit</span><span><i style="background:#9D1B20"></i>Investment</span></div></div>';
-
-      $('#reset-btn').addEventListener('click', () => {
-        state = M.clone(M.DEFAULTS);
-        syncAllInputs();
-        update();
-      });
     }
+
+    $('#reset-btn').addEventListener('click', () => {
+      state = M.clone(M.DEFAULTS);
+      syncAllInputs();
+      update();
+    });
+
+    // Expand all / Collapse all, kept in sync with manual open and close.
+    const accs = () => $$('details.acc');
+    const toggleAll = $('#toggle-all');
+    function syncToggle() {
+      const all = accs().every((a) => a.open);
+      toggleAll.textContent = all ? 'Collapse all' : 'Expand all';
+      toggleAll.setAttribute('aria-pressed', all ? 'true' : 'false');
+    }
+    toggleAll.addEventListener('click', () => {
+      const open = !accs().every((a) => a.open);
+      accs().forEach((a) => {
+        a.open = open;
+      });
+      syncToggle();
+    });
+    accs().forEach((a) => a.addEventListener('toggle', syncToggle));
 
     function renderTable(r) {
       const cols = r.years;
@@ -572,14 +595,14 @@
         row('Cumulative ROI', cols.map((y) => ({ t: Math.round(y.cumRoiPct) + '%' })), Math.round(t.roiPct) + '%') +
         '</tbody></table>';
 
+      $('#years-chart').innerHTML =
+        chartSVG(cols) +
+        '<div class="chart-legend"><span><i style="background:#0F1941"></i>Benefit</span><span><i style="background:#9D1B20"></i>Investment</span></div>';
+      $('[data-five-v]').textContent = compact(t.net);
+
       $('#payback-note').textContent =
         'Payback: ' + paybackText(r.payback, false) +
         '. This assumes each year\u2019s costs are paid up front and benefits arrive evenly through the year.';
-    }
-
-    function renderMobile(r) {
-      $('#mb-benefit').textContent = compact(r.steadyState);
-      $('#mb-roi').textContent = Math.round(r.totals.roiPct) + '%';
     }
 
     function update() {
@@ -587,20 +610,11 @@
       renderDrivers(r);
       renderResults(r);
       renderTable(r);
-      renderMobile(r);
-    }
-
-    // Mobile results bar: only while the calculator is on screen.
-    const bar = $('#mobile-bar');
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(
-        (entries) => entries.forEach((e) => bar.classList.toggle('show', e.isIntersecting)),
-        { threshold: 0.05 }
-      ).observe($('#calc'));
     }
 
     syncAllInputs();
     update();
+    syncToggle();
   }
 
   // ---------------------------------------------------------------------------
