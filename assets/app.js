@@ -222,18 +222,82 @@
       $(sel).setAttribute('href', DEMO_URL);
     });
 
+    // Full outline (collapsed by default).
     $('#agenda-list').innerHTML = AGENDA.map(
       (a) => '<li><span class="ts">' + a[0] + '</span><span>' + a[1] + '</span></li>'
     ).join('');
 
-    $('#find-list').innerHTML = FIND.map(
-      (f) =>
-        '<li><span>' +
-        f[0] +
-        '</span><span class="times">' +
-        f[1].map((t) => '<span class="ts">' + t + '</span>').join('') +
-        '</span></li>'
+    // Challenge finder: a row of chips and one detail panel. Each time maps to
+    // the outline segment that was on screen at that point, so the two lists
+    // can never disagree.
+    const toSec = (t) => {
+      const p = t.split(':');
+      return +p[0] * 60 + +p[1];
+    };
+    const segmentAt = (t) => {
+      let hit = AGENDA[0];
+      AGENDA.forEach((a) => {
+        if (toSec(a[0]) <= toSec(t)) hit = a;
+      });
+      return hit;
+    };
+    const momentsFor = (times) => {
+      const groups = [];
+      times.forEach((t) => {
+        const seg = segmentAt(t);
+        let g = groups.find((x) => x.seg === seg);
+        if (!g) {
+          g = { seg: seg, times: [] };
+          groups.push(g);
+        }
+        g.times.push(t);
+      });
+      return groups;
+    };
+
+    const chips = $('#find-chips');
+    const panel = $('#find-panel');
+    const HINT = '<p class="hint">Hover over (or tap) a challenge to see where it comes up in the recording.</p>';
+    panel.innerHTML = HINT;
+
+    chips.innerHTML = FIND.map(
+      (f, i) =>
+        '<button type="button" class="chip" data-i="' + i + '" aria-pressed="false" aria-controls="find-panel">' + f[0] + '</button>'
     ).join('');
+
+    let current = -1;
+    function select(i) {
+      if (i === current) return;
+      current = i;
+      $$('.chip', chips).forEach((c, n) => {
+        const on = n === i;
+        c.classList.toggle('active', on);
+        c.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      const f = FIND[i];
+      panel.innerHTML =
+        '<div class="pt">' + f[0] + '</div>' +
+        momentsFor(f[1])
+          .map(
+            (g) =>
+              '<div class="moment"><span class="times">' +
+              g.times.map((t) => '<span class="ts">' + t + '</span>').join('') +
+              '</span><span class="what">' + g.seg[1] + '</span></div>'
+          )
+          .join('') +
+        '<p class="ps">Open the recording, then scrub to the time shown.</p>';
+      panel.classList.remove('in');
+      void panel.offsetWidth; // restart the fade
+      panel.classList.add('in');
+    }
+
+    const canHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+    $$('.chip', chips).forEach((c) => {
+      const i = +c.getAttribute('data-i');
+      if (canHover) c.addEventListener('mouseenter', () => select(i));
+      c.addEventListener('focus', () => select(i));
+      c.addEventListener('click', () => select(i));
+    });
   }
 
   // ---------------------------------------------------------------------------

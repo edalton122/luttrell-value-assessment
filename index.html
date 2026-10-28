@@ -142,7 +142,7 @@
         <div class="reveal">
           <div class="eyebrow">Missed the session?</div>
           <h2 class="section-title">Watch the demo</h2>
-          <p class="section-lead">The full one-hour recording of the October 20 demonstration. Use the guide to find the part that matches your question, then scrub to that time.</p>
+          <p class="section-lead">The full one-hour recording of the October 20 demonstration. Pick a challenge to see where it comes up, then scrub to that time.</p>
         </div>
 
         <div class="demo-grid">
@@ -156,19 +156,21 @@
               <a class="btn" id="demo-button" href="#" target="_blank" rel="noopener">Watch the full demo (61 min)</a>
               <span class="helper">It opens in a new tab. On that page, pick your name from the list, or choose "I'm new here" if you don't see it.</span>
             </div>
-            <div class="guide">
-              <h3>Find your challenge</h3>
-              <ul class="ts-list find-list" id="find-list"></ul>
-            </div>
           </div>
 
           <div class="reveal">
-            <div class="guide">
-              <h3>What the session covered</h3>
-              <ul class="ts-list" id="agenda-list"></ul>
+            <div class="finder">
+              <h3 id="finder-title">Find your challenge</h3>
+              <div class="chips" id="find-chips" role="group" aria-labelledby="finder-title"></div>
+              <div class="finder-panel" id="find-panel" aria-live="polite"></div>
             </div>
           </div>
         </div>
+
+        <details class="outline reveal">
+          <summary><span>What the session covered</span><small>14 segments, 61 minutes</small></summary>
+          <ul class="ts-list outline-list" id="agenda-list"></ul>
+        </details>
       </div>
     </section>
 

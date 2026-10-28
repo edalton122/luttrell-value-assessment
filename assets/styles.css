@@ -1206,20 +1206,172 @@ details.assumptions li {
   max-width: 420px;
 }
 
-.guide h3 {
+/* Challenge finder: chips plus one detail panel */
+.finder h3 {
   font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   font-weight: 600;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
-.guide + .guide {
-  margin-top: 30px;
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.demo-cta + .guide {
-  margin-top: 40px;
+.chip {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.chip:hover,
+.chip:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #fff;
+  outline: none;
+}
+
+.chip.active,
+.chip.active:hover,
+.chip.active:focus-visible {
+  background: #fff;
+  border-color: #fff;
+  color: var(--navy);
+}
+
+.finder-panel {
+  display: flex;
+  flex-direction: column;
+  margin-top: 18px;
+  min-height: 254px;
+  padding: 20px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.finder-panel .hint {
+  margin: auto 0;
+  font-size: 14.5px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.finder-panel .pt {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.finder-panel .moment {
+  display: grid;
+  grid-template-columns: 118px 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 11px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 14.5px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.finder-panel .times {
+  display: flex;
+  gap: 6px;
+}
+
+.finder-panel .ps {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.finder-panel.in {
+  animation: panel-in 0.22s ease-out;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Full outline, collapsed until opened */
+details.outline {
+  margin-top: 36px;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+details.outline summary {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 18px 2px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+details.outline summary::-webkit-details-marker {
+  display: none;
+}
+
+details.outline summary small {
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+details.outline summary::after {
+  content: '+';
+  margin-left: auto;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 400;
+  color: #fff;
+}
+
+details.outline[open] summary::after {
+  content: '\2212';
+}
+
+details.outline summary:hover,
+details.outline summary:focus-visible {
+  color: #fff;
+  outline: none;
+}
+
+details.outline summary:focus-visible {
+  box-shadow: inset 0 0 0 2px #fff;
+}
+
+.outline-list {
+  columns: 2;
+  column-gap: 44px;
+  padding-bottom: 14px;
+}
+
+.outline-list li {
+  break-inside: avoid;
 }
 
 .ts-list {
@@ -1247,15 +1399,6 @@ details.assumptions li {
   text-align: center;
   height: fit-content;
   font-size: 13px;
-}
-
-.find-list li {
-  grid-template-columns: 1fr auto;
-}
-
-.find-list .times {
-  display: flex;
-  gap: 6px;
 }
 
 /* ---------- Contact ---------- */
@@ -1396,6 +1539,9 @@ footer .fine {
     transform: none;
     transition: none;
   }
+  .finder-panel.in {
+    animation: none;
+  }
 }
 
 /* ---------- Responsive ---------- */
@@ -1458,6 +1604,9 @@ footer .fine {
   .team {
     grid-template-columns: 1fr;
   }
+  .outline-list {
+    columns: 1;
+  }
   section {
     padding: 72px 0;
   }
@@ -1503,6 +1652,17 @@ footer .fine {
   }
   .sched-row {
     min-width: 520px;
+  }
+  .finder-panel {
+    padding: 18px 16px;
+    min-height: 230px;
+  }
+  .finder-panel .moment {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  details.outline summary small {
+    display: none;
   }
   .result-main {
     display: flex;
